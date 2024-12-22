@@ -1,4 +1,5 @@
 #include "src/gnuboy/gbc.h"
+#include "src/nes/nofrendo.h"
 #include "src/globals.h"
 
 void setup()
@@ -12,25 +13,27 @@ void setup()
 	delay(500);
 
 	// load rom from sd
-	fp = SD.open("/gold.gbc", FILE_READ);
-	if (!fp)
-	{
-		PANIC("ROM Loading failed!");
-	}
-	Serial.println("ROM opened");
+	// fp = SD.open("/Tetris.nes", FILE_READ);
+	// if (!fp)
+	// {
+	// 	PANIC("ROM Loading failed!");
+	// }
+	// Serial.println("ROM opened");
 
-	size_t size = fp.size();
-	Serial.println(fp.size());
-	byte *data;
-	Serial.println("ROM size read");
-	data = (byte *)ps_malloc(size);
-	Serial.println(fp.read(data, size));
+	// size_t size = fp.size();
+	// Serial.println(fp.size());
+	// byte *data;
+	// Serial.println("ROM size read");
+	// data = (byte *)ps_malloc(size);
+	// Serial.println(fp.read(data, size));
 
-	setupGBC(data, size);
+	// setupGBC(data, size);
+	setupNES("Tetris.nes");
 }
 
 void loop()
 {
 	get_keys();
-	long time = loopGBC();
+	// long time = loopGBC();
+	loopNES();
 }

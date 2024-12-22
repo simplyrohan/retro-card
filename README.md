@@ -9,3 +9,4 @@ While I'm still implementing these, the planned emulators for this project are
 
 # To Do
  - [ ] Use real nofrendo
+    - [ ] NES Emulator is based on NESCAT but because of me chopping it up and the one-file source code, the code is horrendous right now
