@@ -344,7 +344,6 @@ static void videoTask(void *arg)
     {
         xQueueReceive(vidQueue, &SCREENMEMORY, portMAX_DELAY);
         lcd_write_frame(0, 0, 256, 240);
-        /// delay(1); //1ms (prevent crash???)
     }
 }
 //--------------------------------------------------------------------------------
@@ -376,15 +375,12 @@ int audiovideo_init() /// osd_init()
 char loadmessage[64];
 unsigned char *getromdata(char *ROMFILENAME_)
 {
-
     char namebuffer[256];
     strncpy(namebuffer, (const char *)"/", sizeof(namebuffer));
     strncat(namebuffer, ROMFILENAME_, sizeof(namebuffer));
 
-    if (DEBUG)
-        Serial.print("FILE SIZE: ");
-    if (DEBUG)
-        Serial.println(fp.size());
+    Serial.print("FILE SIZE: ");
+    Serial.println(fp.size());
 
     FILE_ROM_SIZE = fp.size();
 
@@ -499,8 +495,8 @@ void setupNES(char *ROMFILENAME)
 
     if (DEBUG)
         Serial.println("Inserting cartridge.");
-    if (DEBUG)
-        tft.println("Inserting cartridge.");
+    // if (DEBUG)
+        // tft.println("Inserting cartridge.");
 
     //--------------------------------------------------------------------------------
 
@@ -545,9 +541,9 @@ void setupNES(char *ROMFILENAME)
     if (DEBUG)
     {
         Serial.println("ROMLOAD SUCCESS.");
-        tft.println("ROMLOAD SUCCESS.");
+        // tft.println("ROMLOAD SUCCESS.");
         Serial.println("Inserting Cartridge...");
-        tft.println("Inserting Cartridge...");
+        // tft.println("Inserting Cartridge...");
     }
 
     // map cart's SRAM to CPU $6000-$7FFF
@@ -583,7 +579,7 @@ void loopNES()
     if (DEBUG)
     {
         Serial.println("Insert Cartridge OK.");
-        tft.println("Insert Cartridge OK.");
+        // tft.println("Insert Cartridge OK.");
     }
 
     // START!

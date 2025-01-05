@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "gbc.h"
 extern "C"
 {
@@ -7,8 +8,6 @@ extern "C"
 
 uint16_t *videoBuffer = NULL;
 uint16_t *oldVideoBuffer = NULL;
-
-void *audioBuffer = NULL;
 
 int draw = 0;
 
@@ -30,11 +29,13 @@ void video_callback(void *buffer)
 
 void audio_callback(void *buffer, size_t length) {}
 
-void setupGBC(byte *rom, size_t romSize)
+// void setupGBC(byte *rom, size_t romSize)
+void setupGBC(char *romfilename)
 {
 	// Initialize the emulator
-	if (gnuboy_init(32000, GB_AUDIO_STEREO_S16, GB_PIXEL_565_LE, &video_callback, &audio_callback) < 0)
+	if (gnuboy_init(16000, GB_AUDIO_STEREO_S16, GB_PIXEL_565_LE, &video_callback, &audio_callback) < 0)
 		PANIC("Emulator init failed!");
+
 	Serial.println("Emulator initialized");
 
 	// Allocate video and audio buffers
@@ -43,15 +44,31 @@ void setupGBC(byte *rom, size_t romSize)
 	if (!videoBuffer)
 		PANIC("Video buffer allocation failed!");
 	Serial.println("Video buffer allocated");
+	if (!oldVideoBuffer)
+		PANIC("Old video buffer allocation failed!");
+	Serial.println("Old video buffer allocated");
 
+	// Allocate audio buffer
 	gnuboy_set_framebuffer((void *)videoBuffer);
 	Serial.println("Frame buffer set");
-	gnuboy_set_soundbuffer((void *)audioBuffer, sizeof(audioBuffer) / 2);
-	Serial.println("Sound buffer set");
 
 	// Load ROM
-	// gnuboy_load_rom((const byte *)data, size);
-	gnuboy_load_rom((const byte *)rom, romSize);
+	fp = SD.open(romfilename, FILE_READ);
+	if (!fp)
+	{
+		PANIC("ROM Loading failed!");
+	}
+	Serial.println("ROM opened");
+
+	size_t size = fp.size();
+	Serial.println(fp.size());
+	byte *data;
+	Serial.println("ROM size read");
+	data = (byte *)ps_malloc(size);
+	Serial.println(fp.read(data, size));
+
+	gnuboy_load_rom((const byte *)data, size);
+	// gnuboy_load_rom((const byte *)rom, romSize);
 
 	Serial.println("ROM loaded");
 
@@ -61,6 +78,8 @@ void setupGBC(byte *rom, size_t romSize)
 	// Hard reset to have a clean slate
 	gnuboy_reset(true);
 	Serial.println("Emulator reset");
+
+	// Pin audio task to core 0
 }
 
 long loopGBC()
@@ -101,6 +120,7 @@ long loopGBC()
 
 		Serial.println("Updating pad");
 	}
+
 	if (draw <= 0)
 	{
 		gnuboy_run(1); // 1 = draw
@@ -113,6 +133,7 @@ long loopGBC()
 		draw--;
 		gnuboy_run(0); // 0 = no draw
 	}
+
 	// Serial.print("Frame time: ");
 	// Serial.println((millis() - now));
 	return (millis() - now);
