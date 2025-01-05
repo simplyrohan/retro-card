@@ -3,9 +3,10 @@ A tiny console to run all your favorite retro consoles
 
 # Emulators
 While I'm still implementing these, the planned emulators for this project are
- - [ ] NES
+ - [x] NES (it sucks though)
  - [x] GBC/GB
- - [ ] SMS
+ - [x] SMS
+ - [ ] PrBoom
 
 # To Do
  - [ ] Use real nofrendo
