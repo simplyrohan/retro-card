@@ -1,5 +1,6 @@
 #include "src/gnuboy/gbc.h"
 #include "src/nes/nofrendo.h"
+#include "src/smsplus/mastersystem.h"
 #include "src/globals.h"
 
 File file;
@@ -78,6 +79,10 @@ void selectROM()
 			{
 				game.console = NES;
 			}
+			else if (strstr(game.filename, ".sms"))
+			{
+				game.console = SMS;
+			}
 			else
 			{
 				game.console = UNSUPPORTED;
@@ -113,8 +118,8 @@ void findFiles()
 			// check if file is a ROM
 			// if (strstr(fileName, ".gbc") || strstr(fileName, ".gb"))
 			// {
-				strcpy(filenames[filenum], fileName);
-				filenum++;
+			strcpy(filenames[filenum], fileName);
+			filenum++;
 			// }
 		}
 		file.close();
@@ -173,6 +178,14 @@ void setup()
 		delay(1000);
 
 		break;
+	case (SMS):
+		printCentered("Loading Master System");
+		setupSMS(game.filename);
+		tft.fillScreen(0x0000);
+		// printCentered("Loaded ", game.filename);
+		delay(1000);
+
+		break;
 	default:
 		printCentered("Unsupported file type");
 		delay(2000);
@@ -194,6 +207,9 @@ void loop()
 		break;
 	case (NES):
 		loopNES();
+		break;
+	case (SMS):
+		loopSMS();
 		break;
 	default:
 		break;

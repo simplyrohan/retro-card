@@ -13,6 +13,7 @@ typedef enum console_t
 {
     GBC,
     NES,
+    SMS,
     UNSUPPORTED
 };
 

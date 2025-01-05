@@ -1,8 +1,8 @@
 #pragma once
 #include <Arduino.h>
 
-extern uint16_t *videoBuffer;
-extern uint16_t *oldVideoBuffer;
+extern uint16_t *videoBufferGB;
+extern uint16_t *oldVideoBufferGB;
 
 extern int draw;
 

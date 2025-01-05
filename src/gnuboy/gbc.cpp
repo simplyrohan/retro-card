@@ -6,8 +6,8 @@ extern "C"
 }
 #include "../globals.h"
 
-uint16_t *videoBuffer = NULL;
-uint16_t *oldVideoBuffer = NULL;
+uint16_t *videoBufferGB = NULL;
+uint16_t *oldvideoBufferGB = NULL;
 
 int draw = 0;
 
@@ -18,9 +18,9 @@ void video_callback(void *buffer)
 	{
 		for (int y = 0; y < 144; y++)
 		{
-			if (videoBuffer[x + y * 160] != oldVideoBuffer[x + y * 160])
+			if (videoBufferGB[x + y * 160] != oldvideoBufferGB[x + y * 160])
 			{
-				tft.writePixel(x + 40, y, videoBuffer[x + y * 160]);
+				tft.writePixel(x + 40, y, videoBufferGB[x + y * 160]);
 			}
 		}
 	}
@@ -39,17 +39,17 @@ void setupGBC(char *romfilename)
 	Serial.println("Emulator initialized");
 
 	// Allocate video and audio buffers
-	videoBuffer = (uint16_t *)malloc(160 * 144 * sizeof(uint16_t));
-	oldVideoBuffer = (uint16_t *)malloc(160 * 144 * sizeof(uint16_t));
-	if (!videoBuffer)
+	videoBufferGB = (uint16_t *)malloc(160 * 144 * sizeof(uint16_t));
+	oldvideoBufferGB = (uint16_t *)malloc(160 * 144 * sizeof(uint16_t));
+	if (!videoBufferGB)
 		PANIC("Video buffer allocation failed!");
 	Serial.println("Video buffer allocated");
-	if (!oldVideoBuffer)
+	if (!oldvideoBufferGB)
 		PANIC("Old video buffer allocation failed!");
 	Serial.println("Old video buffer allocated");
 
 	// Allocate audio buffer
-	gnuboy_set_framebuffer((void *)videoBuffer);
+	gnuboy_set_framebuffer((void *)videoBufferGB);
 	Serial.println("Frame buffer set");
 
 	// Load ROM
@@ -126,7 +126,7 @@ long loopGBC()
 		gnuboy_run(1); // 1 = draw
 		draw = 3;
 		// copy video buffer to old video buffer
-		memcpy(oldVideoBuffer, videoBuffer, 160 * 144 * sizeof(uint16_t));
+		memcpy(oldvideoBufferGB, videoBufferGB, 160 * 144 * sizeof(uint16_t));
 	}
 	else
 	{
