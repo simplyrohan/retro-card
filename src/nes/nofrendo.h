@@ -444,7 +444,7 @@ unsigned char *romdata = 0;
 
 void setupNES(char *ROMFILENAME)
 {
-    Serial.begin(115200);
+    Serial.println("NES SETUP");
 
     MEMORY_STATUS();
 
@@ -460,9 +460,6 @@ void setupNES(char *ROMFILENAME)
         memset(OLDSCREENMEMORY[tmp], 0, 256);
     }
 
-    setupHardware();
-
-    //--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
 
     MEMORY_STATUS();

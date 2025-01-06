@@ -20,7 +20,7 @@ void drawFrame()
         for (int y = 0; y < (SMS_HEIGHT / 2); y++)
         {
             int pos = (y * 2) * SMS_WIDTH + (x);
-            if (palette[videoBuffer[pos]] != palette[oldVideoBuffer[pos]]) // Some times a different number has the same color
+            if (videoBuffer[pos] != oldVideoBuffer[pos]) // Some times a different number has the same color
             {
                 // oldVideoBuffer[pos] = videoBuffer[pos];
                 tft.writePixel(x, y, palette[videoBuffer[pos]]);
@@ -50,10 +50,8 @@ void videoTask(void *pvParameters)
 // --- MAIN
 void setupSMS(char *romfilename)
 {
-    Serial.begin(115200);
-    delay(4000);
-    setupHardware();
-    Serial.println("Hardware setup done!");
+    Serial.println("Setting up SMS");
+    Serial.println(romfilename);
 
     system_reset_config();
     option_sms.sndrate = 16000;
@@ -70,10 +68,11 @@ void setupSMS(char *romfilename)
     void *data;
     size_t size;
     // fp = SD.open("sonic.sms", FILE_READ);
+    Serial.println(romfilename);
     fp = SD.open(romfilename, FILE_READ);
     if (!fp)
     {
-        PANIC("ROM Loading failed!");
+        PANIC("File Loading failed!");
     }
     Serial.println("ROM opened");
 

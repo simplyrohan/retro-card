@@ -32,6 +32,9 @@ void audio_callback(void *buffer, size_t length) {}
 // void setupGBC(byte *rom, size_t romSize)
 void setupGBC(char *romfilename)
 {
+	Serial.println("Setting up GBC");
+	Serial.println(romfilename);
+	
 	// Initialize the emulator
 	if (gnuboy_init(16000, GB_AUDIO_STEREO_S16, GB_PIXEL_565_LE, &video_callback, &audio_callback) < 0)
 		PANIC("Emulator init failed!");
