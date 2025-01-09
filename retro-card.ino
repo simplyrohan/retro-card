@@ -231,7 +231,7 @@ void setup()
 	Serial.begin(115200);
 	delay(2000);
 
-	Serial.println("Starting...");
+	// Serial.println("Starting...");
 
 	setupHardware();
 	Serial.println("Hardware setup complete");
@@ -253,8 +253,6 @@ void setup()
 		printCentered("Loading Gameboy Color");
 		setupGBC(game.filename);
 		tft.fillScreen(0x0000);
-		Serial.println(strcat("Loaded ", "skibidi"));
-		printCentered("Loaded idk");
 		delay(1000);
 
 		break;
@@ -262,7 +260,6 @@ void setup()
 		printCentered("Loading NES");
 		setupNES(game.filename);
 		tft.fillScreen(0x0000);
-		printCentered(strcat("Loaded ", game.filename));
 		delay(1000);
 
 		break;
@@ -270,7 +267,6 @@ void setup()
 		printCentered("Loading Master System");
 		setupSMS(game.filename);
 		tft.fillScreen(0x0000);
-		printCentered(strcat("Loaded ", game.filename));
 		delay(1000);
 
 		break;

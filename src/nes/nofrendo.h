@@ -487,14 +487,12 @@ void setupNES(char *ROMFILENAME)
         Serial.print("SELECTED NES: ");
     if (DEBUG)
         Serial.println(ROMFILENAME);
+    fp.open(ROMFILENAME, FILE_READ);
 
     romdata = (unsigned char *)getromdata(ROMFILENAME);
 
     if (DEBUG)
         Serial.println("Inserting cartridge.");
-    // if (DEBUG)
-        // tft.println("Inserting cartridge.");
-
     //--------------------------------------------------------------------------------
 
     if (NULL == rominfo)
@@ -582,6 +580,8 @@ void loopNES()
     // START!
     while (NES_POWER == 1)
     { // NES EMULATION LOOP
+        nes_renderframe(false);
+        nes_renderframe(false);
         nes_renderframe(true);
     }
 
