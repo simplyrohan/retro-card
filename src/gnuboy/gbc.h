@@ -1,11 +1,6 @@
 #pragma once
 #include <Arduino.h>
 
-extern uint16_t *videoBufferGB;
-extern uint16_t *oldVideoBufferGB;
-
-extern int draw;
-
 // --- MAIN
 extern void video_callback(void *buffer);
 
