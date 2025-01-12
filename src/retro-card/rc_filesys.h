@@ -42,3 +42,15 @@ extern size_t rc_get_file_size();
  * @returns Number of bytes read
  */
 extern unsigned int rc_read_file(void *buffer, unsigned int size);
+
+/**
+ * Close the current file
+ * @returns true if the file was successfully closed, false otherwise
+ */
+extern bool rc_close_file();
+
+/**
+ * Close the current directory
+ * @returns true if the directory was successfully closed, false otherwise
+ */
+extern bool rc_close_dir();

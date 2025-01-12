@@ -6,25 +6,17 @@ extern "C"
 }
 #include "../globals.h"
 
-#define PANIC(x)          \
-	{                     \
-		Serial.printf(x); \
-		while (1)         \
-			;             \
-	}
-
 int draw = 0;
 
-rc_framebuffer *framebuffer;
+rc_framebuffer framebuffer;
 
 void video_callback(void *buffer)
 {
-	rc_send_frame(framebuffer);
+	rc_send_frame(&framebuffer);
 }
 
 void audio_callback(void *buffer, size_t length) {}
 
-// void setupGBC(byte *rom, size_t romSize)
 void setupGBC(char *romfilename)
 {
 	Serial.println("Setting up GBC");
@@ -36,11 +28,11 @@ void setupGBC(char *romfilename)
 
 	Serial.println("Emulator initialized");
 
-	rc_create_framebuffer(framebuffer, 160, 144, false);
+	rc_create_framebuffer(&framebuffer, 160, 144, false);
+	Serial.println("Frame buffer created");
 
-	gnuboy_set_framebuffer(framebuffer->buffer);
+	gnuboy_set_framebuffer(framebuffer.buffer);
 	Serial.println("Frame buffer set");
-
 	// Load ROM
 	rc_open_dir("/");
 
@@ -51,7 +43,6 @@ void setupGBC(char *romfilename)
 	rc_read_file(data, size);
 
 	gnuboy_load_rom((const byte *)data, size);
-	// gnuboy_load_rom((const byte *)rom, romSize);
 
 	Serial.println("ROM loaded");
 
@@ -61,14 +52,13 @@ void setupGBC(char *romfilename)
 	// Hard reset to have a clean slate
 	gnuboy_reset(true);
 	Serial.println("Emulator reset");
-
-	// Pin audio task to core 0
 }
 
 long loopGBC()
 {
 	long now = millis();
 
+	rc_read_pad();
 	bool changed = false;
 	for (int i = 0; i < 8; i++)
 	{
@@ -104,18 +94,10 @@ long loopGBC()
 		Serial.println("Updating pad");
 	}
 
-	if (draw <= 0)
-	{
-		gnuboy_run(1); // 1 = draw
-		draw = 3;
-	}
-	else
-	{
-		draw--;
-		gnuboy_run(0); // 0 = no draw
-	}
+	gnuboy_run(1); // 1 = draw
+	gnuboy_run(0); // 1 = draw
+	gnuboy_run(0); // 1 = draw
+	// delay(14);	   // abt 60fps
 
-	// Serial.print("Frame time: ");
-	// Serial.println((millis() - now));
-	return (millis() - now);
+	return millis() - now;
 }
