@@ -31,6 +31,7 @@ void video_task(void *params)
             free(final_buffer);
         }
     }
+    delay(1000 / 20); // 60 FPS delay to yeild to FreeRTOS (crashes without it)
 }
 
 bool rc_video_init()

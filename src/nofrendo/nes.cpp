@@ -106,5 +106,6 @@ long loopNES()
     input_update(0, buttons);
     nes_emulate(true); // true = draw frame
 
+    delay(1000 / 60);
     return 0;
 }
