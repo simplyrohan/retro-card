@@ -15,14 +15,12 @@ void video_task(void *params)
         if (xQueueReceive(video_queue, &fb, portMAX_DELAY) == pdTRUE)
         {
             uint16_t *final_buffer = (uint16_t *)malloc(fb.width * fb.height * sizeof(uint16_t));
+
             if (fb.use_palette)
             {
-                for (int y = 0; y < fb.height; y++)
+                for (int pos = 0; pos < fb.height * fb.width; pos++)
                 {
-                    for (int x = 0; x < fb.width; x++)
-                    {
-                        final_buffer[y * fb.width + x] = fb.palette[((uint8_t *)fb.buffer)[y * fb.width + x]];
-                    }
+                    final_buffer[pos] = fb.palette[((uint8_t *)fb.buffer)[pos]];
                 }
             }
             else
@@ -30,10 +28,7 @@ void video_task(void *params)
                 memcpy(final_buffer, fb.buffer, fb.width * fb.height * sizeof(uint16_t));
             }
             tft.drawRGBBitmap((240 / 2) - (fb.width / 2), 0, (uint16_t *)final_buffer, fb.width, fb.height);
-
             free(final_buffer);
-
-            // tft.drawRGBBitmap((240 / 2) - (fb.width / 2), 0, (uint16_t *)fb.buffer, fb.width, fb.height);
         }
     }
 }
@@ -47,13 +42,14 @@ bool rc_video_init()
     }
 
     // TFT
+    tft.setSPISpeed(80000000);
     tft.init(TFT_WIDTH, TFT_HEIGHT); // Init ST7789 display 240x240 pixel
     tft.setSPISpeed(80000000);
     tft.setRotation(TFT_ROTATION);
     tft.fillScreen(0x0000);
 
     // Create video task on core 0
-    xTaskCreatePinnedToCore(video_task, "video_task", 4096, NULL, 0, NULL, 0);
+    xTaskCreatePinnedToCore(video_task, "video_task", 4096, NULL, 1, NULL, 0);
 
     return true;
 }
