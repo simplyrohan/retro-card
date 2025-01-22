@@ -7,8 +7,12 @@ SdFat SD;
 File file;
 File dir;
 
+#define SPI_SPEED SD_SCK_MHZ(4)
+
 bool rc_filesys_init() {
-    return SD.begin(SD_CS, SPI_FULL_SPEED);
+    pinMode(TFT_CS, OUTPUT);
+    digitalWrite(TFT_CS, HIGH);
+    return SD.begin(SD_CS, SPI_SPEED);
 }
 
 bool rc_open_dir(const char *dirpath) {

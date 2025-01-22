@@ -178,10 +178,15 @@ void select_rom()
 void setup()
 {
 	Serial.begin(115200);
-	// delay(10000);
+
+	disableCore0WDT();
+
+	delay(2000);
 
 	Serial.println("Starting...");
-	if (!rc_system_init()) {
+	
+	if (!rc_system_init())
+	{
 		PANIC("System init failed");
 	}
 	Serial.println("Hardware setup complete");
