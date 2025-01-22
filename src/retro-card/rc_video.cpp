@@ -27,7 +27,7 @@ void video_task(void *params)
             {
                 memcpy(final_buffer, fb.buffer, fb.width * fb.height * sizeof(uint16_t));
             }
-            tft.drawRGBBitmap((240 / 2) - (fb.width / 2), 0, (uint16_t *)final_buffer, fb.width, fb.height);
+            tft.drawRGBBitmap((240 / 2) - (fb.width / 2), (240 / 2) - (fb.height / 2), (uint16_t *)final_buffer, fb.width, fb.height);
             free(final_buffer);
         }
     }
@@ -43,9 +43,9 @@ bool rc_video_init()
     }
 
     // TFT
-    tft.setSPISpeed(80000000);
+    tft.setSPISpeed(40000000);
     tft.init(TFT_WIDTH, TFT_HEIGHT); // Init ST7789 display 240x240 pixel
-    tft.setSPISpeed(80000000);
+    tft.setSPISpeed(40000000);
     tft.setRotation(TFT_ROTATION);
     tft.fillScreen(0x0000);
 

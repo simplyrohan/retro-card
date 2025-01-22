@@ -94,5 +94,5 @@ void loopSMS()
     // Add video buffer to queue
     rc_send_frame(&sms_framebuffer);
 
-    delay(1000 / 60);
+    delay(1000 / 80);
 }

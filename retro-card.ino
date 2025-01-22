@@ -178,10 +178,12 @@ void select_rom()
 void setup()
 {
 	Serial.begin(115200);
-	delay(2000);
+	// delay(10000);
 
 	Serial.println("Starting...");
-	rc_system_init();
+	if (!rc_system_init()) {
+		PANIC("System init failed");
+	}
 	Serial.println("Hardware setup complete");
 
 	delay(500);
