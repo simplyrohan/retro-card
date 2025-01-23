@@ -14,20 +14,80 @@ void video_task(void *params)
     {
         if (xQueueReceive(video_queue, &fb, portMAX_DELAY) == pdTRUE)
         {
-            uint16_t *final_buffer = (uint16_t *)malloc(fb.width * fb.height * sizeof(uint16_t));
+            int height = fb.height * (float)(240.0f / fb.width);
+            uint16_t *final_buffer = (uint16_t *)malloc(240 * height * sizeof(uint16_t));
 
-            if (fb.use_palette)
-            {
-                for (int pos = 0; pos < fb.height * fb.width; pos++)
-                {
-                    final_buffer[pos] = fb.palette[((uint8_t *)fb.buffer)[pos]];
-                }
+            uint8_t scaleEvery;
+            uint8_t scale;
+
+            if (fb.width < 240)
+            {                   // 160 width gameboy
+                scaleEvery = 4; // every 3 lines
+                scale = 2;
             }
             else
-            {
-                memcpy(final_buffer, fb.buffer, fb.width * fb.height * sizeof(uint16_t));
+            { // 256 width nes or sms
+                scaleEvery = 17;
+                scale = 0;
             }
-            tft.drawRGBBitmap((240 / 2) - (fb.width / 2), (240 / 2) - (fb.height / 2), (uint16_t *)final_buffer, fb.width, fb.height);
+
+            uint8_t realY = 0;
+            for (uint16_t y = 0; y < fb.height; y++)
+            {
+                uint16_t line[240];
+
+                uint8_t realX = 0;
+                for (uint16_t x = 0; x < fb.width; x++)
+                {
+                    uint16_t color;
+                    if (fb.use_palette)
+                    {
+                        color = fb.palette[((uint8_t *)fb.buffer)[(y * fb.width) + x]];
+                    }
+                    else
+                    {
+                        color = ((uint16_t *)fb.buffer)[(y * fb.width) + x];
+                    }
+
+                    if (x % scaleEvery == 0)
+                    {
+                        if (scale != 0)
+                        {
+                            for (uint8_t i = 0; i <= scale; i++)
+                            {
+                                realX++;
+                                line[realX] = color;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        realX++;
+                        line[realX] = color;
+                    }
+                }
+
+                if (y % scaleEvery == 0)
+                {
+                    if (scale != 0)
+                    {
+                        for (uint8_t i = 0; i <= scale; i++)
+                        {
+                            memcpy(&final_buffer[realY * 240], line, 240 * sizeof(uint16_t));
+                            realY++;
+                        }
+                    }
+                }
+                else
+                {
+                    memcpy(&final_buffer[realY * 240], line, 240 * sizeof(uint16_t));
+                    realY++;
+                }
+                // use memcpy instead of for loop
+                // memcpy(&final_buffer[y * 240], line, 240 * sizeof(uint16_t));
+            }
+
+            tft.drawRGBBitmap(0, (240 / 2) - (height / 2), (uint16_t *)final_buffer, 240, height);
             free(final_buffer);
         }
     }
