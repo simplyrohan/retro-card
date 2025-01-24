@@ -1,51 +1,61 @@
 #include <Arduino.h>
+#include "nes.h"
 extern "C"
 {
 #include "nofrendo.h"
 }
 #include "../globals.h"
 
+nespal_t palette = NES_PALETTE_NOFRENDO;
 static nes_t *nes;
 
 rc_framebuffer nes_framebuffer;
 
-
-// --- MAIN
 static void build_palette(nespal_t n)
 {
-    nes_framebuffer.palette = (uint16_t *)nofrendo_buildpalette(n, 16);
+    uint16_t *pal = (uint16_t *)nofrendo_buildpalette(n, 16);
+    for (int i = 0; i < 256; i++)
+    { 
+        nes_framebuffer.palette[i] = pal[i];
+    }
+    free(pal);
 }
 
 static void blit_screen(uint8 *bmp)
 {
+    // slowFrame = bmp && !rg_display_sync(false);
+    // // A rolling average should be used for autocrop == 1, it causes jitter in some games...
+    // // int crop_h = (autocrop == 2) || (autocrop == 1 && nes->ppu->left_bg_counter > 210) ? 8 : 0;
+    // int crop_v = (overscan) ? nes->overscan : 0;
+    // int crop_h = (autocrop) ? 8 : 0;
+    // // crop_h = (autocrop == 2) || (autocrop == 1 && nes->ppu->left_bg_counter > 210) ? 8 : 0;
+    // currentUpdate->width = NES_SCREEN_WIDTH - crop_h * 2;
+    // currentUpdate->height = NES_SCREEN_HEIGHT - crop_v * 2;
+    // currentUpdate->offset = crop_v * currentUpdate->stride + crop_h + 8;
+    // rg_display_submit(currentUpdate, 0);
+    Serial.println("Blitting screen");
     rc_send_frame(&nes_framebuffer);
 }
 
 void setupNES(char *romfilename)
 {
-    Serial.begin(115200);
-    delay(2000);
-    Serial.println("Starting...");
+    Serial.println("Setting up NES");
+    Serial.println(romfilename);
 
     rc_create_framebuffer(&nes_framebuffer, NES_SCREEN_PITCH, NES_SCREEN_HEIGHT, true);
 
     nes = nes_init(SYS_DETECT, 16000, true, NULL);
     if (!nes)
         PANIC("Init failed.");
-    Serial.println("NES init done.");
 
-    int ret = -1;
-
-    // ---- Read ROM
+    rc_open_dir("/");
     rc_open_file(romfilename);
     size_t size = rc_get_file_size();
-    uint8_t *data = (uint8_t *)malloc(size);
-    rc_read_file(data, size);
-    rc_close_file();
 
-    // ---- Insert ROM
-    ret = nes_insertcart(rom_loadmem(data, size));
-    Serial.println("ROM inserted.");
+    byte *data = (byte *)ps_malloc(size);
+    rc_read_file(data, size);
+
+    int ret = nes_insertcart(rom_loadmem(data, size));
 
     if (ret == -1)
     {
@@ -63,21 +73,18 @@ void setupNES(char *romfilename)
     {
         PANIC("Unsupported ROM.");
     }
-
-    // ---- NES Config
+    // TODO: i should implement this into the loop as well as aother emulators
+    // app->tickRate = nes->refresh_rate;
     nes->blit_func = blit_screen;
 
-    build_palette(NES_PALETTE_NOFRENDO); // Default palette
-    Serial.println("Palette built.");
+    // ppu_setopt(PPU_LIMIT_SPRITES, rg_settings_get_number(NS_APP, SETTING_SPRITELIMIT, 1));
 
+    build_palette(palette);
 
     // This is necessary for successful state restoration
     // I have not yet investigated why that is...
     nes_emulate(false);
     nes_emulate(false);
-
-    nes_setvidbuf((uint8_t *)nes_framebuffer.buffer);
-    Serial.println("DONE");
 }
 
 long loopNES()
@@ -85,15 +92,14 @@ long loopNES()
     int buttons = 0;
 
     rc_read_pad();
-
     if (pad[KEY_UP])
         buttons |= NES_PAD_UP;
-    if (pad[KEY_RIGHT])
-        buttons |= NES_PAD_RIGHT;
     if (pad[KEY_DOWN])
         buttons |= NES_PAD_DOWN;
     if (pad[KEY_LEFT])
         buttons |= NES_PAD_LEFT;
+    if (pad[KEY_RIGHT])
+        buttons |= NES_PAD_RIGHT;
     if (pad[KEY_A])
         buttons |= NES_PAD_A;
     if (pad[KEY_B])
@@ -103,9 +109,29 @@ long loopNES()
     if (pad[KEY_SELECT])
         buttons |= NES_PAD_SELECT;
 
-    input_update(0, buttons);
-    nes_emulate(true); // true = draw frame
+    // if (joystick & RG_KEY_START)
+    //     buttons |= NES_PAD_START;
+    // if (joystick & RG_KEY_SELECT)
+    //     buttons |= NES_PAD_SELECT;
+    // if (joystick & RG_KEY_UP)
+    //     buttons |= NES_PAD_UP;
+    // if (joystick & RG_KEY_RIGHT)
+    //     buttons |= NES_PAD_RIGHT;
+    // if (joystick & RG_KEY_DOWN)
+    //     buttons |= NES_PAD_DOWN;
+    // if (joystick & RG_KEY_LEFT)
+    //     buttons |= NES_PAD_LEFT;
+    // if (joystick & RG_KEY_A)
+    //     buttons |= NES_PAD_A;
+    // if (joystick & RG_KEY_B)
+    //     buttons |= NES_PAD_B;
 
-    delay(1000 / 60);
+    nes_setvidbuf((uint8_t *)nes_framebuffer.buffer);
+
+    input_update(0, buttons);
+
+    nes_emulate(0); // 1 = draw
+    nes_emulate(1); // 1 = draw
+
     return 0;
 }
