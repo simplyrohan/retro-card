@@ -8,7 +8,7 @@
 #include <stdio.h>
 #define LOG_PRINTF(level, x...) printf(x)
 #define IRAM_ATTR
-#define CRC32(a, b, c) (0)
+#define CRC32(a, b, c) crc32_le(a, b, c)
 #endif
 
 #define MESSAGE_ERROR(x...) LOG_PRINTF(1, "!! " x)

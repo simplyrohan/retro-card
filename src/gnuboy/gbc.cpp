@@ -8,11 +8,11 @@ extern "C"
 
 int draw = 0;
 
-rc_framebuffer framebuffer;
+rc_framebuffer gbc_framebuffer;
 
 void video_callback(void *buffer)
 {
-	rc_send_frame(&framebuffer);
+	rc_send_frame(&gbc_framebuffer);
 }
 
 void audio_callback(void *buffer, size_t length) {}
@@ -28,10 +28,10 @@ void setupGBC(char *romfilename)
 
 	Serial.println("Emulator initialized");
 
-	rc_create_framebuffer(&framebuffer, 160, 144, false);
+	rc_create_framebuffer(&gbc_framebuffer, 160, 144, false);
 	Serial.println("Frame buffer created");
 
-	gnuboy_set_framebuffer(framebuffer.buffer);
+	gnuboy_set_framebuffer(gbc_framebuffer.buffer);
 	Serial.println("Frame buffer set");
 	// Load ROM
 	rc_open_dir("/");
