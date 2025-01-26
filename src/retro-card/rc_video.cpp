@@ -4,8 +4,6 @@ QueueHandle_t video_queue;
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-void write_frame(rc_framebuffer *fb) {}
-
 void video_task(void *params)
 {
     rc_framebuffer fb;
@@ -33,11 +31,11 @@ void video_task(void *params)
                 }
             }
 
-            tft.drawRGBBitmap(0, (240 / 2) - (fb.height / 2), (uint16_t *)final_buffer, fb.width, fb.height);
+            tft.drawRGBBitmap((240 / 2) - (fb.width / 2), (240 / 2) - (fb.height / 2), (uint16_t *)final_buffer, fb.width, fb.height);
             free(final_buffer);
         }
     }
-    delay(1000 / 20); // 60 FPS delay to yeild to FreeRTOS (crashes without it)
+    delay(1000 / 60); // 60 FPS delay to yeild to FreeRTOS (crashes without it)
 }
 
 bool rc_video_init()

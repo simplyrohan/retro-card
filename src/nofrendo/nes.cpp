@@ -23,17 +23,6 @@ static void build_palette(nespal_t n)
 
 static void blit_screen(uint8 *bmp)
 {
-    // slowFrame = bmp && !rg_display_sync(false);
-    // // A rolling average should be used for autocrop == 1, it causes jitter in some games...
-    // // int crop_h = (autocrop == 2) || (autocrop == 1 && nes->ppu->left_bg_counter > 210) ? 8 : 0;
-    // int crop_v = (overscan) ? nes->overscan : 0;
-    // int crop_h = (autocrop) ? 8 : 0;
-    // // crop_h = (autocrop == 2) || (autocrop == 1 && nes->ppu->left_bg_counter > 210) ? 8 : 0;
-    // currentUpdate->width = NES_SCREEN_WIDTH - crop_h * 2;
-    // currentUpdate->height = NES_SCREEN_HEIGHT - crop_v * 2;
-    // currentUpdate->offset = crop_v * currentUpdate->stride + crop_h + 8;
-    // rg_display_submit(currentUpdate, 0);
-    Serial.println("Blitting screen");
     rc_send_frame(&nes_framebuffer);
 }
 
@@ -109,27 +98,12 @@ long loopNES()
     if (pad[KEY_SELECT])
         buttons |= NES_PAD_SELECT;
 
-    // if (joystick & RG_KEY_START)
-    //     buttons |= NES_PAD_START;
-    // if (joystick & RG_KEY_SELECT)
-    //     buttons |= NES_PAD_SELECT;
-    // if (joystick & RG_KEY_UP)
-    //     buttons |= NES_PAD_UP;
-    // if (joystick & RG_KEY_RIGHT)
-    //     buttons |= NES_PAD_RIGHT;
-    // if (joystick & RG_KEY_DOWN)
-    //     buttons |= NES_PAD_DOWN;
-    // if (joystick & RG_KEY_LEFT)
-    //     buttons |= NES_PAD_LEFT;
-    // if (joystick & RG_KEY_A)
-    //     buttons |= NES_PAD_A;
-    // if (joystick & RG_KEY_B)
-    //     buttons |= NES_PAD_B;
-
     nes_setvidbuf((uint8_t *)nes_framebuffer.buffer);
 
     input_update(0, buttons);
 
+    // There is a delay with all the other stuff in this loop so we can speed up the emulator with this
+    nes_emulate(0); // 1 = draw
     nes_emulate(0); // 1 = draw
     nes_emulate(1); // 1 = draw
 
