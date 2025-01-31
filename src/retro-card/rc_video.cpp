@@ -4,6 +4,38 @@ QueueHandle_t video_queue;
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+void write_frame(rc_framebuffer *fb)
+{
+    // This can be collapsed but I'm keeping it like this for readability and for future resizing logic
+    if (fb->use_palette)
+    {
+        uint16_t *final_buffer = (uint16_t *)malloc(fb->width * fb->height * sizeof(uint16_t));
+
+        for (uint16_t y = 0; y < fb->height; y++)
+        {
+            for (uint16_t x = 0; x < fb->width; x++)
+            {
+                // if (fb->use_palette)
+                // {
+                final_buffer[(y * fb->width) + x] = fb->palette[((uint8_t *)fb->buffer)[(y * fb->width) + x]];
+                // }
+                // else
+                // {
+                //     // Again this could be moved to a simply memcpy but I'm keeping it like this for future resizing logic. performance loss is unnoticeable if any
+                //     final_buffer[(y * fb->width) + x] = ((uint16_t *)fb->buffer)[(y * fb->width) + x];
+                // }
+            }
+        }
+
+        tft.drawRGBBitmap((240 / 2) - (fb->width / 2), (240 / 2) - (fb->height / 2), (uint16_t *)final_buffer, fb->width, fb->height);
+        free(final_buffer);
+    }
+    else
+    {
+        tft.drawRGBBitmap((240 / 2) - (fb->width / 2), (240 / 2) - (fb->height / 2), (uint16_t *)fb->buffer, fb->width, fb->height);
+    }
+}
+
 void video_task(void *params)
 {
     rc_framebuffer fb;
@@ -12,27 +44,7 @@ void video_task(void *params)
     {
         if (xQueueReceive(video_queue, &fb, portMAX_DELAY) == pdTRUE)
         {
-            uint16_t *final_buffer = (uint16_t *)malloc(fb.width * fb.width * sizeof(uint16_t));
-
-            // This can be collapsed but I'm keeping it like this for readability and for future resizing logic
-            for (uint16_t y = 0; y < fb.height; y++)
-            {
-                for (uint16_t x = 0; x < fb.width; x++)
-                {
-                    if (fb.use_palette)
-                    {
-                        final_buffer[(y * fb.width) + x] = fb.palette[((uint8_t *)fb.buffer)[(y * fb.width) + x]];
-                    }
-                    else
-                    {
-                        // Again this could be moved to a simply memcpy but I'm keeping it like this for future resizing logic. performance loss is unnoticeable if any
-                        final_buffer[(y * fb.width) + x] = ((uint16_t *)fb.buffer)[(y * fb.width) + x];
-                    }
-                }
-            }
-
-            tft.drawRGBBitmap((240 / 2) - (fb.width / 2), (240 / 2) - (fb.height / 2), (uint16_t *)final_buffer, fb.width, fb.height);
-            free(final_buffer);
+            write_frame(&fb);
         }
     }
     delay(1000 / 60); // 60 FPS delay to yeild to FreeRTOS (crashes without it)
