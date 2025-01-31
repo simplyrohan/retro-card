@@ -1,10 +1,24 @@
 # Retro Card
 Emulate your favourite retro consoles on your ESP32 using the Arduino framework.
 
+
+## Gameboy + Gameboy Color
+https://github.com/user-attachments/assets/21aff386-e192-4769-a361-cd69dc64af8b
+
+## Nintendo Entertainment System
+https://github.com/user-attachments/assets/4a540d7d-fd8e-41d3-907c-6890fa92a31b
+
+## Sega Master System
+https://github.com/user-attachments/assets/6a44b055-16c9-45ce-81d6-186620b979b6
+
+## Super Nintendo Entertainment System
+https://github.com/user-attachments/assets/ddd44ef6-9c81-471a-9de2-9d3afb7fad23
+
+
 # Emulators
 While I'm still improving these, the planned emulators for this project are
  - [x] Nintendo Entertainment System
- - [x] Gameboy (color)
+ - [x] Gameboy (Color)
  - [x] SMS
  - [x] SNES (slow)
  - [ ] Doom/PrBoom
