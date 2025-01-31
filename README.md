@@ -3,16 +3,17 @@ Emulate your favourite retro consoles on your ESP32 using the Arduino framework.
 
 
 ## Gameboy + Gameboy Color
-https://github.com/user-attachments/assets/21aff386-e192-4769-a361-cd69dc64af8b
+https://github.com/user-attachments/assets/9c74dcf2-9fcb-494b-95bb-5f6e5f629e5e
 
 ## Nintendo Entertainment System
-https://github.com/user-attachments/assets/4a540d7d-fd8e-41d3-907c-6890fa92a31b
+https://github.com/user-attachments/assets/02f1b89a-b6f0-4aea-8e59-171c23978e29
 
 ## Sega Master System
-https://github.com/user-attachments/assets/6a44b055-16c9-45ce-81d6-186620b979b6
+https://github.com/user-attachments/assets/b06c0b30-a72e-4a53-b9f5-9ecdc6743122
 
 ## Super Nintendo Entertainment System
-https://github.com/user-attachments/assets/ddd44ef6-9c81-471a-9de2-9d3afb7fad23
+https://github.com/user-attachments/assets/dd5dda0e-e0b9-41b5-8528-285d8d14556c
+
 
 
 # Emulators
