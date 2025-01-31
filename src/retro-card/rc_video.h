@@ -26,6 +26,8 @@ typedef struct rc_framebuffer
  */
 extern bool rc_video_init();
 
+extern void write_frame(rc_framebuffer *fb);
+
 /**
  * Initialize/allocate an `rc_framebuffer` object
  * @param fb Pointer to the framebuffer object

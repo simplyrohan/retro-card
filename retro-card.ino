@@ -1,6 +1,7 @@
 #include "src/gnuboy/gbc.h"
 #include "src/smsplus/mastersystem.h"
 #include "src/nofrendo/nes.h"
+#include "src/snes9x/snes.h"
 #include "src/globals.h"
 
 enum console_t
@@ -8,6 +9,7 @@ enum console_t
 	GBC,
 	NES,
 	SMS,
+	SNES,
 	UNSELECTED
 };
 
@@ -97,8 +99,8 @@ void select_rom()
 	// --------------------------------
 	// ---- Choose console
 
-	char *consoles[] = {"Gameboy Color", "NES", "Master System"}; // Order is important!!
-	uint8_t console = selection_menu(consoles, 3);
+	char *consoles[] = {"Gameboy Color", "NES", "Master System", "Super Nintendo"}; // Order is important!!
+	uint8_t console = selection_menu(consoles, 4);
 
 	Serial.print("Selected console:");
 	Serial.println(console);
@@ -139,6 +141,14 @@ void select_rom()
 					num_roms++;
 				}
 			}
+			else if (console == SNES)
+			{
+				if (strstr(files[i], ".smc") || strstr(files[i], ".sfc"))
+				{
+					roms[num_roms] = files[i];
+					num_roms++;
+				}
+			}
 		}
 	}
 
@@ -167,6 +177,10 @@ void select_rom()
 	else if (console == SMS)
 	{
 		game.console = SMS;
+	}
+	else if (console == SNES)
+	{
+		game.console = SNES;
 	}
 
 	Serial.println("Selected ROM:");
@@ -208,6 +222,9 @@ void setup()
 	case SMS:
 		setupSMS(game.filename);
 		break;
+	case SNES:
+		setupSNES(game.filename);
+		break;
 	default:
 		break;
 	}
@@ -225,6 +242,9 @@ void loop()
 		break;
 	case SMS:
 		loopSMS();
+		break;
+	case SNES:
+		loopSNES();
 		break;
 	default:
 		break;
