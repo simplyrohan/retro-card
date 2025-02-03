@@ -1,6 +1,7 @@
 # Retro Card
 Emulate your favourite retro consoles on your ESP32 using the Arduino framework.
 
+This project uses an ESP32 Pico, a 240x240 LCD, and some buttons to run emulators for the NES, Gameboy Color, Sega Master System, and Super Nintendo. This project is super easy to use, being built on the popular Arduino framework. Just load your ROMs on the SD card, pop it in and voila, retro games on the go. This project is still in its early stages, I'm planning on building a fully featured and affordable mini console for tinkering and gaming. But for now you can have a lot of fun emulating games on your ESP32.
 
 ## Gameboy + Gameboy Color
 https://github.com/user-attachments/assets/9c74dcf2-9fcb-494b-95bb-5f6e5f629e5e
